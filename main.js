@@ -1,5 +1,5 @@
 // ─── DATA DE PROYECTOS ──────────────────────────────────────
-const REPO_RAW = 'https://raw.githubusercontent.com/trayectoriaweb/sasha-portfolio/main';
+const REPO_RAW = 'https://media.githubusercontent.com/media/trayectoriaweb/sasha-portfolio/main';
 
 const projects = [
   {
@@ -123,16 +123,25 @@ function renderProjects() {
         video.muted = true;
         video.loop = true;
         video.playsInline = true;
-        video.preload = 'metadata';
+        video.setAttribute('webkit-playsinline', 'true');
+        video.preload = 'auto';
 
         const encodedPath = file.split('/').map(part => encodeURIComponent(part)).join('/');
-        video.src = isLocal ? file : `${REPO_RAW}/${encodedPath}`;
+        const videoUrl = isLocal ? file : `${REPO_RAW}/${encodedPath}`;
+        video.src = videoUrl;
+
+        // Apply orientation if already provided or detect dynamically
+        if (videoData.orientation) {
+          item.classList.add(`video-item--${videoData.orientation}`);
+        }
 
         video.addEventListener('loadedmetadata', () => {
-          const isVertical = video.videoHeight > video.videoWidth;
-          item.classList.add(isVertical ? 'video-item--vertical' : 'video-item--horizontal');
-          video.classList.add('loaded');
-        }, { once: true });
+          if (video.videoHeight && video.videoWidth) {
+            const isVertical = video.videoHeight >= video.videoWidth;
+            item.classList.remove('video-item--vertical', 'video-item--horizontal');
+            item.classList.add(isVertical ? 'video-item--vertical' : 'video-item--horizontal');
+          }
+        });
 
         const overlay = document.createElement('div');
         overlay.className = 'video-item__overlay';
@@ -142,7 +151,7 @@ function renderProjects() {
         item.appendChild(overlay);
 
         item.addEventListener('click', () => {
-          openVideoModal(video.src, file, proj.title);
+          openVideoModal(videoUrl, file, proj.title);
         });
       }
 
