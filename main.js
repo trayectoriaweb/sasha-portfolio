@@ -22,9 +22,27 @@ const projects = [
     title: 'SOCIAL & BRAND CONTENT',
     tag: 'Reels / Edición & Montaje',
     videos: [
+      { file: 'instagram_videos/REEL DULCE DE LECHE.mp4' },
       { file: 'instagram_videos/DDfgYkTPG0Y.mp4' },
       { file: 'instagram_videos/DDxjW7YP2OA.mp4' },
       { file: 'instagram_videos/DD72ewYP0lr.mp4' },
+    ]
+  },
+  {
+    id: 'patagonia',
+    title: 'PATAGONIA MÚSICA',
+    tag: 'Videoclips & Lyric Videos',
+    videos: [
+      {
+        youtubeId: 'SvvCewSqBlk',
+        title: 'DULCE DE LECHE — Lyric Video',
+        orientation: 'horizontal'
+      },
+      {
+        youtubeId: 'M2xwEUojB7M',
+        title: 'GIRA NACIONAL — Videoclip',
+        orientation: 'horizontal'
+      }
     ]
   },
   {
@@ -70,37 +88,62 @@ function renderProjects() {
 
     const grid = sec.querySelector('.video-grid');
 
-    proj.videos.forEach(({ file }) => {
+    proj.videos.forEach((videoData) => {
       const item = document.createElement('div');
       item.className = 'video-item';
 
-      const video = document.createElement('video');
-      video.muted = true;
-      video.loop = true;
-      video.playsInline = true;
-      video.preload = 'metadata';
+      if (videoData.youtubeId) {
+        // YouTube video card with HD thumbnail
+        item.classList.add('video-item--horizontal');
 
-      // Encode path parts correctly for GitHub raw hosting / local
-      const encodedPath = file.split('/').map(part => encodeURIComponent(part)).join('/');
-      video.src = isLocal ? file : `${REPO_RAW}/${encodedPath}`;
+        const thumb = document.createElement('img');
+        thumb.className = 'video-thumb';
+        thumb.src = `https://img.youtube.com/vi/${videoData.youtubeId}/maxresdefault.jpg`;
+        thumb.alt = videoData.title;
+        thumb.loading = 'lazy';
+        thumb.onerror = () => {
+          thumb.src = `https://img.youtube.com/vi/${videoData.youtubeId}/hqdefault.jpg`;
+        };
 
-      video.addEventListener('loadedmetadata', () => {
-        const isVertical = video.videoHeight > video.videoWidth;
-        item.classList.add(isVertical ? 'video-item--vertical' : 'video-item--horizontal');
-        video.classList.add('loaded');
-      }, { once: true });
+        const overlay = document.createElement('div');
+        overlay.className = 'video-item__overlay';
+        overlay.innerHTML = '<div class="play-icon"></div>';
 
-      const overlay = document.createElement('div');
-      overlay.className = 'video-item__overlay';
-      overlay.innerHTML = '<div class="play-icon"></div>';
+        item.appendChild(thumb);
+        item.appendChild(overlay);
 
-      item.appendChild(video);
-      item.appendChild(overlay);
+        item.addEventListener('click', () => {
+          openYouTubeModal(videoData.youtubeId, videoData.title, proj.title);
+        });
+      } else {
+        // HTML5 local/LFS video card
+        const file = videoData.file;
+        const video = document.createElement('video');
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
 
-      // Click to open in large player modal with sound & controls
-      item.addEventListener('click', () => {
-        openVideoModal(video.src, file, proj.title);
-      });
+        const encodedPath = file.split('/').map(part => encodeURIComponent(part)).join('/');
+        video.src = isLocal ? file : `${REPO_RAW}/${encodedPath}`;
+
+        video.addEventListener('loadedmetadata', () => {
+          const isVertical = video.videoHeight > video.videoWidth;
+          item.classList.add(isVertical ? 'video-item--vertical' : 'video-item--horizontal');
+          video.classList.add('loaded');
+        }, { once: true });
+
+        const overlay = document.createElement('div');
+        overlay.className = 'video-item__overlay';
+        overlay.innerHTML = '<div class="play-icon"></div>';
+
+        item.appendChild(video);
+        item.appendChild(overlay);
+
+        item.addEventListener('click', () => {
+          openVideoModal(video.src, file, proj.title);
+        });
+      }
 
       grid.appendChild(item);
     });
@@ -174,6 +217,9 @@ function isInViewport(el) {
 // ─── VIDEO LIGHTBOX MODAL CONTROLLER ──────────────────────
 const modal = document.getElementById('video-modal');
 const modalPlayer = document.getElementById('modal-video-player');
+const modalNativeContainer = document.getElementById('modal-native-container');
+const modalYouTubeContainer = document.getElementById('modal-youtube-container');
+const modalYouTubePlayer = document.getElementById('modal-youtube-player');
 const modalCloseBtn = document.getElementById('modal-close-btn');
 const modalTitle = document.getElementById('modal-video-title');
 const modalProject = document.getElementById('modal-video-project');
@@ -181,11 +227,17 @@ const modalProject = document.getElementById('modal-video-project');
 function openVideoModal(videoSrc, filePath, projectTitle) {
   if (!modal || !modalPlayer) return;
 
+  // Toggle containers
+  if (modalYouTubeContainer) modalYouTubeContainer.style.display = 'none';
+  if (modalYouTubePlayer) modalYouTubePlayer.removeAttribute('src');
+  if (modalNativeContainer) modalNativeContainer.style.display = 'flex';
+
   // Derive a clean title from file name
   const rawFileName = filePath.split('/').pop().replace(/\.[^/.]+$/, '');
   const cleanTitle = rawFileName
     .replace(/^COFITNESS_/, '')
     .replace(/^Incidentes graciosos - /, '')
+    .replace(/^REEL /, '')
     .replace(/ - Sasha Goy.*$/, '');
 
   modalTitle.textContent = cleanTitle || rawFileName;
@@ -199,10 +251,37 @@ function openVideoModal(videoSrc, filePath, projectTitle) {
   modalPlayer.play().catch(() => {});
 }
 
+function openYouTubeModal(youtubeId, videoTitle, projectTitle) {
+  if (!modal || !modalYouTubePlayer) return;
+
+  // Pause & hide native video
+  if (modalPlayer) {
+    modalPlayer.pause();
+    modalPlayer.removeAttribute('src');
+  }
+  if (modalNativeContainer) modalNativeContainer.style.display = 'none';
+
+  // Show & setup YouTube iframe
+  if (modalYouTubeContainer) modalYouTubeContainer.style.display = 'flex';
+  modalYouTubePlayer.src = `https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0&modestbranding=1`;
+
+  modalTitle.textContent = videoTitle;
+  modalProject.textContent = projectTitle;
+
+  modal.showModal();
+}
+
 function closeVideoModal() {
-  if (!modal || !modalPlayer) return;
-  modalPlayer.pause();
-  modalPlayer.removeAttribute('src'); // Stop buffering
+  if (!modal) return;
+
+  if (modalPlayer) {
+    modalPlayer.pause();
+    modalPlayer.removeAttribute('src'); // Stop buffering
+  }
+  if (modalYouTubePlayer) {
+    modalYouTubePlayer.removeAttribute('src'); // Stop YouTube playback
+  }
+
   modal.close();
 }
 
@@ -213,7 +292,9 @@ function initModalEvents() {
 
   // Close when clicking outside of modal content (backdrop click / light dismiss)
   modal.addEventListener('click', (event) => {
-    const rect = modal.querySelector('.video-modal__inner').getBoundingClientRect();
+    const inner = modal.querySelector('.video-modal__inner');
+    if (!inner) return;
+    const rect = inner.getBoundingClientRect();
     const isInDialog = (
       rect.top <= event.clientY &&
       event.clientY <= rect.top + rect.height &&
@@ -227,8 +308,7 @@ function initModalEvents() {
 
   // Native cancel (Escape key)
   modal.addEventListener('cancel', () => {
-    modalPlayer.pause();
-    modalPlayer.removeAttribute('src');
+    closeVideoModal();
   });
 }
 

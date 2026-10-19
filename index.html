@@ -31,6 +31,7 @@
       <button class="filter-btn active" data-filter="all">All Projects</button>
       <button class="filter-btn" data-filter="cofitness">Cofitness</button>
       <button class="filter-btn" data-filter="social">Social & Content</button>
+      <button class="filter-btn" data-filter="patagonia">Patagonia Música</button>
       <button class="filter-btn" data-filter="incidentes">Incidentes Graciosos</button>
       <button class="filter-btn" data-filter="casamiento">IA Wedding Film</button>
     </div>
@@ -84,8 +85,11 @@
   <dialog id="video-modal" class="video-modal" aria-label="Reproductor de video">
     <div class="video-modal__inner">
       <button class="video-modal__close" id="modal-close-btn" aria-label="Cerrar video">&times;</button>
-      <div class="video-modal__player-container">
+      <div class="video-modal__player-container" id="modal-native-container">
         <video id="modal-video-player" playsinline controls preload="auto"></video>
+      </div>
+      <div class="video-modal__player-container" id="modal-youtube-container" style="display: none;">
+        <iframe id="modal-youtube-player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
       <div class="video-modal__info">
         <span id="modal-video-title" class="video-modal__title"></span>
