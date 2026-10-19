@@ -46,13 +46,14 @@ const projects = [
     ]
   },
   {
-    id: 'incidentes',
-    title: 'INCIDENTES GRACIOSOS',
-    tag: 'Creatividad & Narrative Editing',
+    id: 'videocasos',
+    title: 'VIDEOCASOS PUBLICITARIOS',
+    tag: 'Creatividad, Guion & Edición Publicitaria',
     videos: [
-      { file: 'Incidentes graciosos/Incidentes graciosos - CHOQUE - Sasha Goy y Mara Barbiani.mp4' },
-      { file: 'Incidentes graciosos/Incidentes graciosos - Incendio - Sasha Goy y Mara Barbiani.mp4' },
-      { file: 'Incidentes graciosos/Incidentes graciosos - ROBO - Sasha Goy y Mara Barbiani.mp4' },
+      { file: 'videocasos publicitarios/PullVid.com - Modo Redirexionar - TaDa.mp4' },
+      { file: 'videocasos publicitarios/Incidentes graciosos - CHOQUE - Sasha Goy y Mara Barbiani.mp4' },
+      { file: 'videocasos publicitarios/Incidentes graciosos - Incendio - Sasha Goy y Mara Barbiani.mp4' },
+      { file: 'videocasos publicitarios/Incidentes graciosos - ROBO - Sasha Goy y Mara Barbiani.mp4' },
     ]
   },
   {
@@ -235,6 +236,7 @@ function openVideoModal(videoSrc, filePath, projectTitle) {
   // Derive a clean title from file name
   const rawFileName = filePath.split('/').pop().replace(/\.[^/.]+$/, '');
   const cleanTitle = rawFileName
+    .replace(/^PullVid\.com - /, '')
     .replace(/^COFITNESS_/, '')
     .replace(/^Incidentes graciosos - /, '')
     .replace(/^REEL /, '')
