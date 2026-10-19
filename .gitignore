@@ -1,6 +1,11 @@
 yt-dlp.exe
 git-lfs.exe
+ffmpeg.exe
+ffprobe.exe
+inspect_videos.js
+find_dims.ps1
 *.txt
 *.log
 .DS_Store
 Thumbs.db
+

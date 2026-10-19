@@ -7,14 +7,14 @@ const projects = [
     title: 'COFITNESS',
     tag: 'Reels & Brand Motion · 2024',
     videos: [
-      { file: 'cofitness_video/COFITNESS_REEL 1.mp4' },
-      { file: 'cofitness_video/COFITNESS_REEL 2.mp4' },
-      { file: 'cofitness_video/COFITNESS_REEL 4.mp4' },
-      { file: 'cofitness_video/COFITNESS_REEL 5.mp4' },
-      { file: 'cofitness_video/COFITNESS_REEL 6.mp4' },
-      { file: 'cofitness_video/COFITNESS_REEL 7.mp4' },
-      { file: 'cofitness_video/COFITNESS_REEL 8.mp4' },
-      { file: 'cofitness_video/COFITNESS_REEL 9.mp4' },
+      { file: 'cofitness_video/COFITNESS_REEL 1.mp4', orientation: 'vertical', title: 'Cofitness — Reel 01' },
+      { file: 'cofitness_video/COFITNESS_REEL 2.mp4', orientation: 'vertical', title: 'Cofitness — Reel 02' },
+      { file: 'cofitness_video/COFITNESS_REEL 4.mp4', orientation: 'vertical', title: 'Cofitness — Reel 04' },
+      { file: 'cofitness_video/COFITNESS_REEL 5.mp4', orientation: 'vertical', title: 'Cofitness — Reel 05' },
+      { file: 'cofitness_video/COFITNESS_REEL 6.mp4', orientation: 'vertical', title: 'Cofitness — Reel 06' },
+      { file: 'cofitness_video/COFITNESS_REEL 7.mp4', orientation: 'vertical', title: 'Cofitness — Reel 07' },
+      { file: 'cofitness_video/COFITNESS_REEL 8.mp4', orientation: 'vertical', title: 'Cofitness — Reel 08' },
+      { file: 'cofitness_video/COFITNESS_REEL 9.mp4', orientation: 'vertical', title: 'Cofitness — Reel 09' },
     ]
   },
   {
@@ -22,10 +22,10 @@ const projects = [
     title: 'SOCIAL & BRAND CONTENT',
     tag: 'Reels / Edición & Montaje',
     videos: [
-      { file: 'instagram_videos/REEL DULCE DE LECHE.mp4' },
-      { file: 'instagram_videos/DDfgYkTPG0Y.mp4' },
-      { file: 'instagram_videos/DDxjW7YP2OA.mp4' },
-      { file: 'instagram_videos/DD72ewYP0lr.mp4' },
+      { file: 'instagram_videos/REEL DULCE DE LECHE.mp4', orientation: 'vertical', title: 'Dulce de Leche — Reel' },
+      { file: 'instagram_videos/DDfgYkTPG0Y.mp4', orientation: 'vertical', title: 'Social Content 01' },
+      { file: 'instagram_videos/DDxjW7YP2OA.mp4', orientation: 'vertical', title: 'Social Content 02' },
+      { file: 'instagram_videos/DD72ewYP0lr.mp4', orientation: 'vertical', title: 'Social Content 03' },
     ]
   },
   {
@@ -50,10 +50,10 @@ const projects = [
     title: 'VIDEOCASOS PUBLICITARIOS',
     tag: 'Creatividad, Guion & Edición Publicitaria',
     videos: [
-      { file: 'videocasos publicitarios/PullVid.com - Modo Redirexionar - TaDa.mp4' },
-      { file: 'videocasos publicitarios/Incidentes graciosos - CHOQUE - Sasha Goy y Mara Barbiani.mp4' },
-      { file: 'videocasos publicitarios/Incidentes graciosos - Incendio - Sasha Goy y Mara Barbiani.mp4' },
-      { file: 'videocasos publicitarios/Incidentes graciosos - ROBO - Sasha Goy y Mara Barbiani.mp4' },
+      { file: 'videocasos publicitarios/PullVid.com - Modo Redirexionar - TaDa.mp4', orientation: 'horizontal', title: 'Modo Redirexionar — TaDa' },
+      { file: 'videocasos publicitarios/Incidentes graciosos - CHOQUE - Sasha Goy y Mara Barbiani.mp4', orientation: 'horizontal', title: 'Incidentes Graciosos — Choque' },
+      { file: 'videocasos publicitarios/Incidentes graciosos - Incendio - Sasha Goy y Mara Barbiani.mp4', orientation: 'horizontal', title: 'Incidentes Graciosos — Incendio' },
+      { file: 'videocasos publicitarios/Incidentes graciosos - ROBO - Sasha Goy y Mara Barbiani.mp4', orientation: 'horizontal', title: 'Incidentes Graciosos — Robo' },
     ]
   },
   {
@@ -61,7 +61,7 @@ const projects = [
     title: 'AI WEDDING FILM',
     tag: 'Generative AI & Conceptual Video',
     videos: [
-      { file: 'IA video para casamiento/video casamiento.mp4' },
+      { file: 'IA video para casamiento/video casamiento.mp4', orientation: 'horizontal', title: 'AI Wedding Conceptual Film' },
     ]
   }
 ];
@@ -92,11 +92,11 @@ function renderProjects() {
     proj.videos.forEach((videoData) => {
       const item = document.createElement('div');
       item.className = 'video-item';
+      const orientation = videoData.orientation || 'vertical';
+      item.classList.add(`video-item--${orientation}`);
 
       if (videoData.youtubeId) {
         // YouTube video card with HD thumbnail
-        item.classList.add('video-item--horizontal');
-
         const thumb = document.createElement('img');
         thumb.className = 'video-thumb';
         thumb.src = `https://img.youtube.com/vi/${videoData.youtubeId}/maxresdefault.jpg`;
@@ -117,29 +117,35 @@ function renderProjects() {
           openYouTubeModal(videoData.youtubeId, videoData.title, proj.title);
         });
       } else {
-        // HTML5 local/LFS video card
+        // HTML5 local/hosted video card
         const file = videoData.file;
         const video = document.createElement('video');
         video.muted = true;
         video.loop = true;
         video.playsInline = true;
         video.setAttribute('webkit-playsinline', 'true');
-        video.preload = 'auto';
+        video.preload = 'metadata';
 
         const encodedPath = file.split('/').map(part => encodeURIComponent(part)).join('/');
-        const videoUrl = isLocal ? file : `${REPO_RAW}/${encodedPath}`;
-        video.src = videoUrl;
+        const relativeUrl = encodedPath;
+        const fallbackUrl = `${REPO_RAW}/${encodedPath}`;
 
-        // Apply orientation if already provided or detect dynamically
-        if (videoData.orientation) {
-          item.classList.add(`video-item--${videoData.orientation}`);
-        }
+        video.src = relativeUrl;
 
+        // Fallback to raw media storage if relative fetch encounters issues
+        video.addEventListener('error', () => {
+          if (video.src !== fallbackUrl && !isLocal) {
+            video.src = fallbackUrl;
+            video.load();
+          }
+        }, { once: true });
+
+        // Update orientation dynamically if metadata provides different aspect ratio
         video.addEventListener('loadedmetadata', () => {
           if (video.videoHeight && video.videoWidth) {
-            const isVertical = video.videoHeight >= video.videoWidth;
+            const isVert = video.videoHeight > video.videoWidth;
             item.classList.remove('video-item--vertical', 'video-item--horizontal');
-            item.classList.add(isVertical ? 'video-item--vertical' : 'video-item--horizontal');
+            item.classList.add(isVert ? 'video-item--vertical' : 'video-item--horizontal');
           }
         });
 
@@ -151,7 +157,7 @@ function renderProjects() {
         item.appendChild(overlay);
 
         item.addEventListener('click', () => {
-          openVideoModal(videoUrl, file, proj.title);
+          openVideoModal(video.currentSrc || relativeUrl, file, proj.title, orientation, videoData.title);
         });
       }
 
@@ -163,23 +169,38 @@ function renderProjects() {
 }
 
 // ─── FILTROS DE PROYECTOS ──────────────────────────────────
+function setFilter(filter) {
+  const buttons = document.querySelectorAll('.filter-btn');
+  buttons.forEach(b => {
+    b.classList.toggle('active', b.dataset.filter === filter);
+  });
+
+  const sections = document.querySelectorAll('.project-section');
+  sections.forEach(sec => {
+    if (filter === 'all' || sec.dataset.category === filter) {
+      sec.classList.remove('hidden');
+    } else {
+      sec.classList.add('hidden');
+    }
+  });
+}
+
 function initFilters() {
   const buttons = document.querySelectorAll('.filter-btn');
   buttons.forEach(btn => {
     btn.addEventListener('click', () => {
-      buttons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      setFilter(btn.dataset.filter);
+    });
+  });
 
-      const filter = btn.dataset.filter;
-      const sections = document.querySelectorAll('.project-section');
-
-      sections.forEach(sec => {
-        if (filter === 'all' || sec.dataset.category === filter) {
-          sec.classList.remove('hidden');
-        } else {
-          sec.classList.add('hidden');
-        }
-      });
+  // Connect hero showcase cards to filters
+  const showcaseCards = document.querySelectorAll('.showcase-card');
+  showcaseCards.forEach(card => {
+    card.addEventListener('click', (e) => {
+      const target = card.dataset.filterTarget;
+      if (target) {
+        setFilter(target);
+      }
     });
   });
 }
@@ -199,7 +220,7 @@ function initVideoObserver() {
         video.pause();
       }
     });
-  }, { threshold: 0.2, rootMargin: '250px' });
+  }, { threshold: 0.15, rootMargin: '200px' });
 
   items.forEach(item => {
     observer.observe(item);
@@ -234,24 +255,31 @@ const modalCloseBtn = document.getElementById('modal-close-btn');
 const modalTitle = document.getElementById('modal-video-title');
 const modalProject = document.getElementById('modal-video-project');
 
-function openVideoModal(videoSrc, filePath, projectTitle) {
+function openVideoModal(videoSrc, filePath, projectTitle, orientation = 'vertical', customTitle = '') {
   if (!modal || !modalPlayer) return;
+
+  // Set modal format classes (vertical vs horizontal)
+  modal.classList.remove('video-modal--vertical', 'video-modal--horizontal');
+  modal.classList.add(orientation === 'vertical' ? 'video-modal--vertical' : 'video-modal--horizontal');
 
   // Toggle containers
   if (modalYouTubeContainer) modalYouTubeContainer.style.display = 'none';
   if (modalYouTubePlayer) modalYouTubePlayer.removeAttribute('src');
   if (modalNativeContainer) modalNativeContainer.style.display = 'flex';
 
-  // Derive a clean title from file name
-  const rawFileName = filePath.split('/').pop().replace(/\.[^/.]+$/, '');
-  const cleanTitle = rawFileName
-    .replace(/^PullVid\.com - /, '')
-    .replace(/^COFITNESS_/, '')
-    .replace(/^Incidentes graciosos - /, '')
-    .replace(/^REEL /, '')
-    .replace(/ - Sasha Goy.*$/, '');
-
-  modalTitle.textContent = cleanTitle || rawFileName;
+  // Title
+  if (customTitle) {
+    modalTitle.textContent = customTitle;
+  } else {
+    const rawFileName = filePath.split('/').pop().replace(/\.[^/.]+$/, '');
+    const cleanTitle = rawFileName
+      .replace(/^PullVid\.com - /, '')
+      .replace(/^COFITNESS_/, '')
+      .replace(/^Incidentes graciosos - /, '')
+      .replace(/^REEL /, '')
+      .replace(/ - Sasha Goy.*$/, '');
+    modalTitle.textContent = cleanTitle || rawFileName;
+  }
   modalProject.textContent = projectTitle;
 
   modalPlayer.src = videoSrc;
@@ -264,6 +292,10 @@ function openVideoModal(videoSrc, filePath, projectTitle) {
 
 function openYouTubeModal(youtubeId, videoTitle, projectTitle) {
   if (!modal || !modalYouTubePlayer) return;
+
+  // Set horizontal format
+  modal.classList.remove('video-modal--vertical', 'video-modal--horizontal');
+  modal.classList.add('video-modal--horizontal');
 
   // Pause & hide native video
   if (modalPlayer) {
