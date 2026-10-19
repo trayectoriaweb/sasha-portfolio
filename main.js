@@ -97,13 +97,9 @@ function renderProjects() {
       item.appendChild(video);
       item.appendChild(overlay);
 
-      // Click to toggle play / unmute or fullscreen
+      // Click to open in large player modal with sound & controls
       item.addEventListener('click', () => {
-        if (video.paused) {
-          video.play();
-        } else {
-          video.pause();
-        }
+        openVideoModal(video.src, file, proj.title);
       });
 
       grid.appendChild(item);
@@ -175,9 +171,71 @@ function isInViewport(el) {
   return rect.top < window.innerHeight && rect.bottom > 0;
 }
 
+// ─── VIDEO LIGHTBOX MODAL CONTROLLER ──────────────────────
+const modal = document.getElementById('video-modal');
+const modalPlayer = document.getElementById('modal-video-player');
+const modalCloseBtn = document.getElementById('modal-close-btn');
+const modalTitle = document.getElementById('modal-video-title');
+const modalProject = document.getElementById('modal-video-project');
+
+function openVideoModal(videoSrc, filePath, projectTitle) {
+  if (!modal || !modalPlayer) return;
+
+  // Derive a clean title from file name
+  const rawFileName = filePath.split('/').pop().replace(/\.[^/.]+$/, '');
+  const cleanTitle = rawFileName
+    .replace(/^COFITNESS_/, '')
+    .replace(/^Incidentes graciosos - /, '')
+    .replace(/ - Sasha Goy.*$/, '');
+
+  modalTitle.textContent = cleanTitle || rawFileName;
+  modalProject.textContent = projectTitle;
+
+  modalPlayer.src = videoSrc;
+  modalPlayer.muted = false; // Enabled sound in player modal
+  modalPlayer.currentTime = 0;
+
+  modal.showModal();
+  modalPlayer.play().catch(() => {});
+}
+
+function closeVideoModal() {
+  if (!modal || !modalPlayer) return;
+  modalPlayer.pause();
+  modalPlayer.removeAttribute('src'); // Stop buffering
+  modal.close();
+}
+
+function initModalEvents() {
+  if (!modal) return;
+
+  modalCloseBtn?.addEventListener('click', closeVideoModal);
+
+  // Close when clicking outside of modal content (backdrop click / light dismiss)
+  modal.addEventListener('click', (event) => {
+    const rect = modal.querySelector('.video-modal__inner').getBoundingClientRect();
+    const isInDialog = (
+      rect.top <= event.clientY &&
+      event.clientY <= rect.top + rect.height &&
+      rect.left <= event.clientX &&
+      event.clientX <= rect.left + rect.width
+    );
+    if (!isInDialog) {
+      closeVideoModal();
+    }
+  });
+
+  // Native cancel (Escape key)
+  modal.addEventListener('cancel', () => {
+    modalPlayer.pause();
+    modalPlayer.removeAttribute('src');
+  });
+}
+
 // ─── INIT ──────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   renderProjects();
   initFilters();
   initVideoObserver();
+  initModalEvents();
 });

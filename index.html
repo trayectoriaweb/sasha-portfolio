@@ -80,6 +80,20 @@
     </div>
   </footer>
 
+  <!-- VIDEO LIGHTBOX MODAL -->
+  <dialog id="video-modal" class="video-modal" aria-label="Reproductor de video">
+    <div class="video-modal__inner">
+      <button class="video-modal__close" id="modal-close-btn" aria-label="Cerrar video">&times;</button>
+      <div class="video-modal__player-container">
+        <video id="modal-video-player" playsinline controls preload="auto"></video>
+      </div>
+      <div class="video-modal__info">
+        <span id="modal-video-title" class="video-modal__title"></span>
+        <span id="modal-video-project" class="video-modal__project"></span>
+      </div>
+    </div>
+  </dialog>
+
   <script src="main.js"></script>
 </body>
 </html>
