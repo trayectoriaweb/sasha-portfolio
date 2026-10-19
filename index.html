@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sasha Goy — Video Editor</title>
-  <meta name="description" content="Portfolio de Sasha Goy — Editora de video, diseñadora gráfica y creatividad publicitaria." />
+  <title>Sasha Goy — Video Editor & Designer</title>
+  <meta name="description" content="Portfolio de Sasha Goy — Editor de video, diseñador gráfico y director de arte / creatividad publicitaria." />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -22,18 +22,21 @@
   <!-- HERO -->
   <header class="hero">
     <h1 class="hero__title">Video<br>Editor.</h1>
-    <p class="hero__sub">Buenos Aires · Motion · Branding</p>
+    <p class="hero__sub">Rosario · Motion · Art Direction · Graphic Design</p>
   </header>
 
   <!-- WORK -->
   <section class="work" id="work">
-    <div class="work__header">
-      <h2 class="project__label">Project</h2>
-      <span class="project__tag">COFITNESS — 2024</span>
+    <div class="work__filters" id="work-filters">
+      <button class="filter-btn active" data-filter="all">All Projects</button>
+      <button class="filter-btn" data-filter="cofitness">Cofitness</button>
+      <button class="filter-btn" data-filter="social">Social & Content</button>
+      <button class="filter-btn" data-filter="incidentes">Incidentes Graciosos</button>
+      <button class="filter-btn" data-filter="casamiento">IA Wedding Film</button>
     </div>
 
-    <div class="video-grid" id="cofitness-grid">
-      <!-- Videos injected by JS -->
+    <div class="projects-container" id="projects-container">
+      <!-- Projects injected dynamically by JS -->
     </div>
   </section>
 
@@ -41,24 +44,29 @@
   <section class="about" id="about">
     <div class="about__inner">
       <h2 class="about__title">About</h2>
-      <div class="about__content">
-        <p class="about__bio">
-          Editor de video con base en Rosario, Argentina. Pasé por agencias trabajando para clientes
-          locales, de Buenos Aires y de Miami — y también en formato freelance. Uso Premiere Pro y
-          After Effects como herramientas de trabajo diario.
-          <br><br>
-          Soy diseñador gráfico, lo que me permite unir criterio visual con narrativa audiovisual.
-          Estudié creatividad publicitaria como director de arte, así que entiendo cómo funciona
-          el universo de la comunicación desde adentro. La edición de video no es solo oficio:
-          es lo que más me apasiona.
-        </p>
-        <ul class="about__tags">
-          <li>Video Editing — Premiere Pro &amp; After Effects</li>
-          <li>Graphic Design</li>
-          <li>Advertising Creativity / Art Direction</li>
-          <li>Agency &amp; Freelance Experience</li>
-          <li>Argentina · Buenos Aires · Miami</li>
-        </ul>
+      <div class="about__grid">
+        <div class="about__photo-wrapper">
+          <img src="sasha-goy.png" alt="Sasha Goy — Video Editor" class="about__photo" loading="lazy" />
+        </div>
+        <div class="about__content">
+          <p class="about__bio">
+            Editor de video con base en Rosario, Argentina. Pasé por agencias trabajando para clientes
+            locales, de Buenos Aires y de Miami — y también en formato freelance. Uso Premiere Pro y
+            After Effects como herramientas de trabajo diario.
+            <br><br>
+            Soy diseñador gráfico, lo que me permite unir criterio visual con narrativa audiovisual.
+            Estudié creatividad publicitaria como director de arte, entonces puedo entender integralmente cómo funciona
+            el universo de la comunicación, la estética y el ritmo de cada pieza. La edición de video no es solo oficio:
+            es lo que más me apasiona.
+          </p>
+          <ul class="about__tags">
+            <li>Video Editing — Premiere Pro &amp; After Effects</li>
+            <li>Graphic Design &amp; Visual Identity</li>
+            <li>Advertising Creativity &amp; Art Direction</li>
+            <li>Agency &amp; Freelance Experience</li>
+            <li>Argentina · Buenos Aires · Miami</li>
+          </ul>
+        </div>
       </div>
     </div>
   </section>

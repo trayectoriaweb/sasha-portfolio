@@ -1,55 +1,142 @@
-// ─── VIDEO CONFIG ───────────────────────────────────────────
-// Raw GitHub URLs para los videos (se actualizan después de push)
+// ─── DATA DE PROYECTOS ──────────────────────────────────────
 const REPO_RAW = 'https://raw.githubusercontent.com/trayectoriaweb/sasha-portfolio/main';
 
-const videos = [
-  { file: 'cofitness_video/COFITNESS_REEL 1.mp4' },
-  { file: 'cofitness_video/COFITNESS_REEL 2.mp4' },
-  { file: 'cofitness_video/COFITNESS_REEL 4.mp4' },
-  { file: 'cofitness_video/COFITNESS_REEL 5.mp4' },
-  { file: 'cofitness_video/COFITNESS_REEL 6.mp4' },
-  { file: 'cofitness_video/COFITNESS_REEL 7.mp4' },
-  { file: 'cofitness_video/COFITNESS_REEL 8.mp4' },
-  { file: 'cofitness_video/COFITNESS_REEL 9.mp4' },
+const projects = [
+  {
+    id: 'cofitness',
+    title: 'COFITNESS',
+    tag: 'Reels & Brand Motion · 2024',
+    videos: [
+      { file: 'cofitness_video/COFITNESS_REEL 1.mp4' },
+      { file: 'cofitness_video/COFITNESS_REEL 2.mp4' },
+      { file: 'cofitness_video/COFITNESS_REEL 4.mp4' },
+      { file: 'cofitness_video/COFITNESS_REEL 5.mp4' },
+      { file: 'cofitness_video/COFITNESS_REEL 6.mp4' },
+      { file: 'cofitness_video/COFITNESS_REEL 7.mp4' },
+      { file: 'cofitness_video/COFITNESS_REEL 8.mp4' },
+      { file: 'cofitness_video/COFITNESS_REEL 9.mp4' },
+    ]
+  },
+  {
+    id: 'social',
+    title: 'SOCIAL & BRAND CONTENT',
+    tag: 'Reels / Edición & Montaje',
+    videos: [
+      { file: 'instagram_videos/DDfgYkTPG0Y.mp4' },
+      { file: 'instagram_videos/DDxjW7YP2OA.mp4' },
+      { file: 'instagram_videos/DD72ewYP0lr.mp4' },
+    ]
+  },
+  {
+    id: 'incidentes',
+    title: 'INCIDENTES GRACIOSOS',
+    tag: 'Creatividad & Narrative Editing',
+    videos: [
+      { file: 'Incidentes graciosos/Incidentes graciosos - CHOQUE - Sasha Goy y Mara Barbiani.mp4' },
+      { file: 'Incidentes graciosos/Incidentes graciosos - Incendio - Sasha Goy y Mara Barbiani.mp4' },
+      { file: 'Incidentes graciosos/Incidentes graciosos - ROBO - Sasha Goy y Mara Barbiani.mp4' },
+    ]
+  },
+  {
+    id: 'casamiento',
+    title: 'AI WEDDING FILM',
+    tag: 'Generative AI & Conceptual Video',
+    videos: [
+      { file: 'IA video para casamiento/video casamiento.mp4' },
+    ]
+  }
 ];
 
-// ─── BUILD GRID ────────────────────────────────────────────
-function buildGrid() {
-  const grid = document.getElementById('cofitness-grid');
-  if (!grid) return;
+// ─── RENDER DE PROYECTOS ───────────────────────────────────
+function renderProjects() {
+  const container = document.getElementById('projects-container');
+  if (!container) return;
+  container.innerHTML = '';
 
-  videos.forEach(({ file }) => {
-    const item = document.createElement('div');
-    item.className = 'video-item'; // orientation class added after metadata loads
+  const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:';
 
-    const video = document.createElement('video');
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
-    video.preload = 'metadata'; // need metadata to detect dimensions
+  projects.forEach((proj) => {
+    const sec = document.createElement('div');
+    sec.className = 'project-section';
+    sec.dataset.category = proj.id;
 
-    const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:';
-    video.src = isLocal ? file : `${REPO_RAW}/${file.split('/').map(encodeURIComponent).join('/')}`;
+    sec.innerHTML = `
+      <div class="project__header">
+        <h3 class="project__label">${proj.title}</h3>
+        <span class="project__tag">${proj.tag}</span>
+      </div>
+      <div class="video-grid"></div>
+    `;
 
-    // Detect orientation from actual video dimensions
-    video.addEventListener('loadedmetadata', () => {
-      const isVertical = video.videoHeight > video.videoWidth;
-      item.classList.add(isVertical ? 'video-item--vertical' : 'video-item--horizontal');
-      video.classList.add('loaded');
-    }, { once: true });
+    const grid = sec.querySelector('.video-grid');
 
-    const overlay = document.createElement('div');
-    overlay.className = 'video-item__overlay';
-    overlay.innerHTML = '<div class="play-icon"></div>';
+    proj.videos.forEach(({ file }) => {
+      const item = document.createElement('div');
+      item.className = 'video-item';
 
-    item.appendChild(video);
-    item.appendChild(overlay);
-    grid.appendChild(item);
+      const video = document.createElement('video');
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.preload = 'metadata';
+
+      // Encode path parts correctly for GitHub raw hosting / local
+      const encodedPath = file.split('/').map(part => encodeURIComponent(part)).join('/');
+      video.src = isLocal ? file : `${REPO_RAW}/${encodedPath}`;
+
+      video.addEventListener('loadedmetadata', () => {
+        const isVertical = video.videoHeight > video.videoWidth;
+        item.classList.add(isVertical ? 'video-item--vertical' : 'video-item--horizontal');
+        video.classList.add('loaded');
+      }, { once: true });
+
+      const overlay = document.createElement('div');
+      overlay.className = 'video-item__overlay';
+      overlay.innerHTML = '<div class="play-icon"></div>';
+
+      item.appendChild(video);
+      item.appendChild(overlay);
+
+      // Click to toggle play / unmute or fullscreen
+      item.addEventListener('click', () => {
+        if (video.paused) {
+          video.play();
+        } else {
+          video.pause();
+        }
+      });
+
+      grid.appendChild(item);
+    });
+
+    container.appendChild(sec);
   });
 }
 
-// ─── LAZY LOAD + HOVER PLAY ────────────────────────────────
-function initVideos() {
+// ─── FILTROS DE PROYECTOS ──────────────────────────────────
+function initFilters() {
+  const buttons = document.querySelectorAll('.filter-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter;
+      const sections = document.querySelectorAll('.project-section');
+
+      sections.forEach(sec => {
+        if (filter === 'all' || sec.dataset.category === filter) {
+          sec.classList.remove('hidden');
+        } else {
+          sec.classList.add('hidden');
+        }
+      });
+    });
+  });
+}
+
+// ─── LAZY LOAD + AUTOPLAY EN VIEWPORT ──────────────────────
+function initVideoObserver() {
   const items = document.querySelectorAll('.video-item');
 
   const observer = new IntersectionObserver((entries) => {
@@ -58,18 +145,17 @@ function initVideos() {
       if (!video) return;
 
       if (entry.isIntersecting) {
-        // Autoplay when in viewport
         video.play().catch(() => {});
       } else {
         video.pause();
       }
     });
-  }, { threshold: 0.2, rootMargin: '200px' });
+  }, { threshold: 0.2, rootMargin: '250px' });
 
   items.forEach(item => {
     observer.observe(item);
 
-    // Pause/play on hover (for desktop)
+    // Hover preview on desktop
     item.addEventListener('mouseenter', () => {
       const video = item.querySelector('video');
       if (video) video.play().catch(() => {});
@@ -77,7 +163,9 @@ function initVideos() {
 
     item.addEventListener('mouseleave', () => {
       const video = item.querySelector('video');
-      if (video && !isInViewport(item)) video.pause();
+      if (video && !isInViewport(item)) {
+        video.pause();
+      }
     });
   });
 }
@@ -89,6 +177,7 @@ function isInViewport(el) {
 
 // ─── INIT ──────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  buildGrid();
-  initVideos();
+  renderProjects();
+  initFilters();
+  initVideoObserver();
 });
