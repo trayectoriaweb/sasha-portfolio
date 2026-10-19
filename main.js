@@ -3,14 +3,14 @@
 const REPO_RAW = 'https://raw.githubusercontent.com/trayectoriaweb/sasha-portfolio/main';
 
 const videos = [
-  { file: 'cofitness_video/COFITNESS_REEL 1.mp4', orientation: 'horizontal' },
-  { file: 'cofitness_video/COFITNESS_REEL 2.mp4', orientation: 'vertical' },
-  { file: 'cofitness_video/COFITNESS_REEL 4.mp4', orientation: 'vertical' },
-  { file: 'cofitness_video/COFITNESS_REEL 5.mp4', orientation: 'horizontal' },
-  { file: 'cofitness_video/COFITNESS_REEL 6.mp4', orientation: 'vertical' },
-  { file: 'cofitness_video/COFITNESS_REEL 7.mp4', orientation: 'horizontal' },
-  { file: 'cofitness_video/COFITNESS_REEL 8.mp4', orientation: 'vertical' },
-  { file: 'cofitness_video/COFITNESS_REEL 9.mp4', orientation: 'vertical' },
+  { file: 'cofitness_video/COFITNESS_REEL 1.mp4' },
+  { file: 'cofitness_video/COFITNESS_REEL 2.mp4' },
+  { file: 'cofitness_video/COFITNESS_REEL 4.mp4' },
+  { file: 'cofitness_video/COFITNESS_REEL 5.mp4' },
+  { file: 'cofitness_video/COFITNESS_REEL 6.mp4' },
+  { file: 'cofitness_video/COFITNESS_REEL 7.mp4' },
+  { file: 'cofitness_video/COFITNESS_REEL 8.mp4' },
+  { file: 'cofitness_video/COFITNESS_REEL 9.mp4' },
 ];
 
 // ─── BUILD GRID ────────────────────────────────────────────
@@ -18,19 +18,25 @@ function buildGrid() {
   const grid = document.getElementById('cofitness-grid');
   if (!grid) return;
 
-  videos.forEach(({ file, orientation }) => {
+  videos.forEach(({ file }) => {
     const item = document.createElement('div');
-    item.className = `video-item video-item--${orientation}`;
+    item.className = 'video-item'; // orientation class added after metadata loads
 
     const video = document.createElement('video');
     video.muted = true;
     video.loop = true;
     video.playsInline = true;
-    video.preload = 'none';
+    video.preload = 'metadata'; // need metadata to detect dimensions
 
-    // Use relative path when served locally, raw GitHub when deployed
     const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:';
-    video.src = isLocal ? file : `${REPO_RAW}/${encodeURIComponent(file)}`;
+    video.src = isLocal ? file : `${REPO_RAW}/${file.split('/').map(encodeURIComponent).join('/')}`;
+
+    // Detect orientation from actual video dimensions
+    video.addEventListener('loadedmetadata', () => {
+      const isVertical = video.videoHeight > video.videoWidth;
+      item.classList.add(isVertical ? 'video-item--vertical' : 'video-item--horizontal');
+      video.classList.add('loaded');
+    }, { once: true });
 
     const overlay = document.createElement('div');
     overlay.className = 'video-item__overlay';
@@ -52,14 +58,7 @@ function initVideos() {
       if (!video) return;
 
       if (entry.isIntersecting) {
-        // Load video when near viewport
-        if (video.preload === 'none') {
-          video.preload = 'metadata';
-          video.load();
-          video.addEventListener('loadeddata', () => {
-            video.classList.add('loaded');
-          }, { once: true });
-        }
+        // Autoplay when in viewport
         video.play().catch(() => {});
       } else {
         video.pause();
